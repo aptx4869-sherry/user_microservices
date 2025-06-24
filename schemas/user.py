@@ -1,0 +1,1 @@
+# Pydantic user schema placeholder
