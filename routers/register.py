@@ -1,23 +1,55 @@
-
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, EmailStr
 from typing import List
+import hashlib, hmac, base64, secrets, time, json
 
 app = FastAPI()
 
-# In-memory storage (for now)
+# In-memory user store and secret key
 users = []
+SECRET_KEY = secrets.token_bytes(32)
 
+# User input model
 class User(BaseModel):
     username: str
     email: EmailStr
     password: str
 
-@app.post("/register")
+# Token response model
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+# Hash the password with a generated salt
+def hash_password(password: str) -> str:
+    salt = secrets.token_hex(16)
+    hashed = hashlib.sha256((salt + password).encode()).hexdigest()
+    return f"{salt}${hashed}"
+
+# Verify entered password against stored hash
+def verify_password(plain: str, hashed: str) -> bool:
+    salt, hashed_val = hashed.split('$')
+    return hashed_val == hashlib.sha256((salt + plain).encode()).hexdigest()
+
+# Generate a simple HMAC-based access token
+def create_token(data: dict, expires_in: int = 1800) -> str:
+    payload = {
+        "data": data,
+        "exp": int(time.time()) + expires_in
+    }
+    payload_bytes = json.dumps(payload).encode()
+    signature = hmac.new(SECRET_KEY, payload_bytes, hashlib.sha256).digest()
+    token = base64.urlsafe_b64encode(payload_bytes + b"." + signature).decode()
+    return token
+
+# Register endpoint: hash password, store user, return token
+@app.post("/register", response_model=Token)
 def register_user(user: User):
-    # Check for existing user
     if any(u["email"] == user.email for u in users):
         raise HTTPException(status_code=400, detail="Email already registered")
-    
-    users.append(user.dict())
-    return {"message": "User registered successfully", "user": user.username}
+
+    hashed_pwd = hash_password(user.password)
+    users.append({"username": user.username, "email": user.email, "password": hashed_pwd})
+
+    token = create_token({"email": user.email})
+    return {"access_token": token, "token_type": "bearer"}
