@@ -1,9 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from typing import List
 import hashlib, hmac, base64, secrets, time, json
 
-app = FastAPI()
+router = APIRouter()
 
 # In-memory user store and secret key
 users = []
@@ -43,7 +43,7 @@ def create_token(data: dict, expires_in: int = 1800) -> str:
     return token
 
 # Register endpoint: hash password, store user, return token
-@app.post("/register", response_model=Token)
+@router.post("/register", response_model=Token)
 def register_user(user: User):
     if any(u["email"] == user.email for u in users):
         raise HTTPException(status_code=400, detail="Email already registered")
