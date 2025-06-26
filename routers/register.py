@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from typing import List
-import hashlib, hmac, base64, secrets, time, json
+import hashlib, hmac, base64, secrets, time, json, re
 
 router = APIRouter()
 
@@ -14,6 +14,29 @@ class User(BaseModel):
     username: str
     email: EmailStr
     password: str
+
+    @field_validator("username", mode="before")
+    @classmethod
+    def clean_username(cls, v):
+        cleaned = v.strip()
+        if not cleaned:
+            raise ValueError("Username cannot be empty")
+        return cleaned
+
+    @field_validator("password")
+    @classmethod
+    def validate_password_strength(cls, v):
+        if len(v) < 8:
+            raise ValueError("Password must be at least 8 characters long")
+        if not re.search(r"[A-Z]", v):
+            raise ValueError("Password must include at least one uppercase letter")
+        if not re.search(r"[a-z]", v):
+            raise ValueError("Password must include at least one lowercase letter")
+        if not re.search(r"[0-9]", v):
+            raise ValueError("Password must include at least one digit")
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", v):
+            raise ValueError("Password must include at least one special character")
+        return v
 
 # Token response model
 class Token(BaseModel):
