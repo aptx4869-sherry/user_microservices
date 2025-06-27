@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel, EmailStr, field_validator
-from typing import List
+from typing import Optional
 import hashlib, hmac, base64, secrets, time, json, re
 
 router = APIRouter()
@@ -65,6 +65,23 @@ def create_token(data: dict, expires_in: int = 1800) -> str:
     token = base64.urlsafe_b64encode(payload_bytes + b"." + signature).decode()
     return token
 
+# Decode and verify token, return payload if valid
+def verify_token(token: str) -> Optional[dict]:
+    try:
+        token_bytes = base64.urlsafe_b64decode(token.encode())
+        payload_bytes, signature = token_bytes.rsplit(b".", 1)
+        expected_signature = hmac.new(SECRET_KEY, payload_bytes, hashlib.sha256).digest()
+        if not hmac.compare_digest(signature, expected_signature):
+            return None
+
+        payload = json.loads(payload_bytes.decode())
+        if payload["exp"] < int(time.time()):
+            return None
+
+        return payload["data"]
+    except Exception:
+        return None
+
 # Register endpoint: hash password, store user, return token
 @router.post("/register", response_model=Token)
 def register_user(user: User):
@@ -76,3 +93,16 @@ def register_user(user: User):
 
     token = create_token({"email": user.email})
     return {"access_token": token, "token_type": "bearer"}
+
+# Session check endpoint
+@router.get("/session")
+def check_session(authorization: Optional[str] = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
+
+    token = authorization.split(" ")[1]
+    user_data = verify_token(token)
+    if not user_data:
+        raise HTTPException(status_code=401, detail="Session expired or token invalid")
+
+    return {"message": "Session is valid", "user": user_data}
