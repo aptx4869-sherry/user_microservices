@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="6" time="1.517" timestamp="2025-06-28T23:56:51.328348+05:30" hostname="EDITH"><testcase classname="tests.basic_requests_test" name="test_user_registration" time="0.009" /><testcase classname="tests.basic_requests_test" name="test_duplicate_email" time="0.016" /><testcase classname="tests.basic_requests_test" name="test_invalid_email" time="0.012" /><testcase classname="tests.basic_requests_test" name="test_missing_fields" time="0.012"><failure message="assert False&#10; +  where False = any(&lt;generator object test_missing_fields.&lt;locals&gt;.&lt;genexpr&gt; at 0x00000163DF96C0B0&gt;)">def test_missing_fields():
+        url = "http://127.0.0.1:8000/register"
+        payload = {
+            "username": "user3"
+            # missing email and password
+        }
+        response = requests.post(url, json=payload)
+        assert response.status_code == 422
+        response_data = response.json()
+        assert "detail" in response_data
+        # Check that the error mentions missing fields
+        error_msgs = [err["msg"] for err in response_data["detail"]]
+&gt;       assert any("field required" in msg for msg in error_msgs)
+E       assert False
+E        +  where False = any(&lt;generator object test_missing_fields.&lt;locals&gt;.&lt;genexpr&gt; at 0x00000163DF96C0B0&gt;)
+
+tests\basic_requests_test.py:63: AssertionError</failure></testcase><testcase classname="tests.test_register" name="test_register_success" time="0.046" /><testcase classname="tests.test_register" name="test_register_duplicate_email" time="0.016" /></testsuite></testsuites>
