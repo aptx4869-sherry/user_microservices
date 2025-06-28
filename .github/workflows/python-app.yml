@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -23,8 +23,19 @@ jobs:
         pip install pytest requests httpx
     - name: Run application
       run: |
-        start /B uvicorn routers.register:app --host 0.0.0.0 --port 8000
-        timeout /T 10
+        uvicorn routers.register:app --host 0.0.0.0 --port 8000 &
+        sleep 5
+        for i in {1..30}; do
+          if curl -s http://0.0.0.0:8000/health > /dev/null; then
+            echo "Server is up!"
+            break
+          fi
+          echo "Waiting for server ($i)..."
+          sleep 1
+        done
+        if ! curl -s http://0.0.0.0:8000/health > /dev/null; then
+          echo "Server did not start in time." && exit 1
+        fi
     - name: Run requests-based tests
       run: |
         pytest tests/basic_requests_test.py --junitxml=tests/report.xml
@@ -32,4 +43,15 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: test-report
+        path: tests/report.xml
+    - name: Update test file for Docker
+      run: |
+        sed -i 's|http://host.docker.internal:8000/register|http://localhost:8000/register|g' tests/basic_requests_test.py
+    - name: Run tests against Dockerized app
+      run: |
+        pytest tests/basic_requests_test.py --junitxml=tests/report.xml
+    - name: Upload Docker test report
+      uses: actions/upload-artifact@v4
+      with:
+        name: docker-test-report
         path: tests/report.xml
