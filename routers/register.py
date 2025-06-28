@@ -1,9 +1,12 @@
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, HTTPException, Header, Request
 from pydantic import BaseModel, EmailStr, field_validator
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 from typing import Optional
 import hashlib, hmac, base64, secrets, time, json, re
 
 router = APIRouter()
+limiter = Limiter(key_func=get_remote_address)
 
 # In-memory user store and secret key
 users = []
@@ -84,7 +87,8 @@ def verify_token(token: str) -> Optional[dict]:
 
 # Register endpoint: hash password, store user, return token
 @router.post("/register", response_model=Token)
-def register_user(user: User):
+@limiter.limit("1/minute")
+def register_user(user: User, request: Request):
     if any(u["email"] == user.email for u in users):
         raise HTTPException(status_code=400, detail="Email already registered")
 
@@ -106,3 +110,4 @@ def check_session(authorization: Optional[str] = Header(None)):
         raise HTTPException(status_code=401, detail="Session expired or token invalid")
 
     return {"message": "Session is valid", "user": user_data}
+
