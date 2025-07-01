@@ -1,5 +1,10 @@
 fastapi
 uvicorn
 pydantic
+python-jose
 pytest
 slowapi
+zxcvbn-python
+google-auth[requests]
+google-auth-oauthlib
+

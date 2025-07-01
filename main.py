@@ -16,6 +16,15 @@ app.include_router(register.router)
 app.include_router(view_users.router)
 
 app.state.limiter = limiter
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)

@@ -1,0 +1,88 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Code Brew ☕ | Sign in</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 300;
+            font-style: normal;
+            font-variation-settings:
+                "wdth" 100;
+            background: #f4f4f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+            color: #333;
+        }
+
+        p {
+            margin-bottom: 2rem;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Welcome to Code Brew ☕</h1>
+        <p>Sign in with Google to continue</p>
+
+        <div id="g_id_onload" data-client_id="" data-callback="handleCredentialResponse">
+        </div>
+
+        <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="continue_with"
+            data-shape="pill" data-logo_alignment="center">
+        </div>
+    </div>
+    <script>
+
+        async function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token:", response.credential);
+
+            try {
+                const configRes = await fetch("http://localhost:8000/config/google-client-id");
+                const { client_id } = await configRes.json();
+
+                const registerRes = await fetch("http://localhost:8000/google-register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ token: response.credential }),
+                });
+
+                const data = await registerRes.json();
+                console.log("Backend response:", data);
+            } catch (err) {
+                console.error("Error:", err);
+            }
+        }
+
+    </script>
+</body>
+
+</html>
