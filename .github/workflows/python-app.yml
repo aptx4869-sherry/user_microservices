@@ -18,7 +18,7 @@ jobs:
       with:
         python-version: '3.8'
     - name: Create .env file from GitHub Secrets
-        run: |
+      run: |
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> espresso_engine/.env
     - name: Install dependencies
       run: |
