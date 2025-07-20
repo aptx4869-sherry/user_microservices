@@ -6,7 +6,7 @@ services:
     volumes:
       - ./:/app
     command: >
-      uvicorn routers.register:app --host 0.0.0.0 --port 8000
+      uvicorn espresso_engine.main_cafe_server:app --host 0.0.0.0 --port 8000
     ports:
       - "8000:8000"
     healthcheck:
@@ -20,7 +20,7 @@ services:
     volumes:
       - ./:/app
     environment:
-      - BASE_URL=http://app:8000
+      - BASE_URL=http://app:3000
     command: >
       sh -c "pip install -r requirements.txt && sleep 10 && pytest --junitxml=tests/report.xml tests/basic_requests_test.py && cp tests/report.xml /app/tests/docker_report.xml"
 
