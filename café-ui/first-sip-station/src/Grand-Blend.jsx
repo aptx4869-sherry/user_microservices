@@ -89,30 +89,6 @@ function GrandBlend() {
     checkSessionAndShowToast();
   }, []); // Run once on mount
 
-  // Effect for refreshing token every 5 minutes
-  useEffect(() => {
-    const refreshInterval = setInterval(async () => {
-      if (isAuthenticated) { // Only try to refresh if already authenticated
-        try {
-          const data = await refreshToken();
-          console.log("Token refreshed in background:", data);
-        } catch (err) {
-          console.error("Refresh failed:", err);
-          if (err.message.includes('401')) { // Check for unauthorized status
-            showToast("Session expired. Please log in again.", "error");
-            setIsAuthenticated(false);
-            setUsername(null);
-            setTimeout(() => window.location.reload(), 2000); // Reload to prompt login
-          } else {
-            showToast(`Failed to refresh session: ${err.message}`, "error");
-          }
-        }
-      }
-    }, 5 * 60 * 1000); // every 5 minutes
-
-    // Cleanup interval on component unmount
-    return () => clearInterval(refreshInterval);
-  }, [isAuthenticated, showToast]); // Re-run if authentication status changes
 
   return (
      <div className="container bg-white p-8 rounded-xl shadow-2xl border border-amber-300 text-center">
