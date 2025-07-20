@@ -9,8 +9,8 @@ import uuid
 router = APIRouter(prefix="/auth", tags=["auth"])
 ACCESS_TOKEN_EXPIRE_SECONDS =  1800
 
+def verify_csrf_token(header_token: Optional[str], cookie_token: Optional[str]) -> bool:
 
-def verify_csrf_token(header_token: str | None, cookie_token: str | None) -> bool:
     if not header_token or not cookie_token:
         return False
     return secrets.compare_digest(header_token, cookie_token)
