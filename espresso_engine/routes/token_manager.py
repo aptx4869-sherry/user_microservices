@@ -31,7 +31,7 @@ def refresh_token(
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
     user_id = str(uuid.uuid4())
   
-    new_token = create_token({"sub": user_id})
+    new_token = create_token({"sub": user_id, "type" : "access"})
     response.set_cookie(
             key="session_token",
             value=new_token,

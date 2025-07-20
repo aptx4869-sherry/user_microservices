@@ -33,8 +33,8 @@ async def register_user(user: User, request: Request, response: Response):
     user_id = str(uuid.uuid4())
     add_user({"username": user.username, "email": user.email, "password": hashed_pwd, "sub" : user_id})
 
-    access_token = create_token({"sub": user_id })
-    refresh_token = create_refresh_token({"sub": user_id})
+    access_token = create_token({"sub": user_id, "type" : "access"})
+    refresh_token = create_refresh_token({"sub": user_id, "type" : "refresh"})
     
     csrf_token = generate_csrf_token()
     set_auth_cookies(response, access_token, refresh_token, csrf_token)
@@ -52,8 +52,8 @@ async def login_user(user_credentials: User, request: Request, response: Respons
     if not user or not verify_password(user_credentials.password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    access_token = create_token({"sub": user_id})
-    refresh_token = create_refresh_token({"sub": user_id})
+    access_token = create_token({"sub": user_id, "type": "access"})
+    refresh_token = create_refresh_token({"sub": user_id, "type" : "refresh"})
     
     csrf_token = generate_csrf_token()
     set_auth_cookies(response, access_token, refresh_token, csrf_token)
@@ -98,8 +98,8 @@ async def google_register(data: GoogleTokenRequest, response: Response):
         user_exists = get_user_by_email(email)
 
         # Create new tokens
-        access_token = create_token({"sub": user_id})
-        refresh_token = create_refresh_token({"sub": user_id})
+        access_token = create_token({"sub": user_id, "type" : "access"})
+        refresh_token = create_refresh_token({"sub": user_id,  "type" : "refresh"})
         csrf_token = generate_csrf_token()
 
         if not user_exists:
@@ -145,9 +145,10 @@ async def check_session_cookies(request: Request, response: Response):
     # Try access token first
     if session_token:
         payload = verify_token(session_token)
+        print(payload)
         if payload and payload.get("type") == "access":
             print("Access token is valid.")
-            return {"username": payload.get("username"), "email": payload.get("email"), "message": "Session valid via access token", "type": "access"}
+            return {"message": "Session valid via access token", "type": "access"}
 
     # If access token is missing or invalid, try refresh token
     if refresh_token:
@@ -158,7 +159,7 @@ async def check_session_cookies(request: Request, response: Response):
         if payload and payload.get("type") == "refresh":
             print("Refresh token is valid. Issuing new access token.")
             # Issue new access token and refresh token (optional: rotate refresh token)
-            new_access_token = create_token({"sub": user_id})
+            new_access_token = create_token({"sub": user_id, "type" : "access"})
             new_refresh_token = create_refresh_token({"sub": user_id}) # Optional: rotate refresh token
             new_csrf_token = generate_csrf_token() # Generate new CSRF token
             
