@@ -1,13 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
-from typing import List
+from fastapi import HTTPException
 from pydantic import BaseModel
+from typing import List, Dict
 
-router = APIRouter()
+# Import the shared router instance
+from config.cafe_config import router
+from data.cafe_data_storage import users 
 
-# Dummy in-memory store passed from main app
-users = []
-
-# Response model (no password exposed)
 class UserOut(BaseModel):
     username: str
     email: str
