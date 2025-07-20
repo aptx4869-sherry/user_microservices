@@ -9,7 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    PYTHONPATH: ./espresso_engine 
+    env:
+      PYTHONPATH: ./espresso_engine 
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.8
