@@ -13,7 +13,7 @@ load_dotenv()
 # Google Client ID from environment variables
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 if not GOOGLE_CLIENT_ID:
-    raise ValueError("GOOGLE_CLIENT_ID environment variable not set. Please set it in your .env file.")
+    raise RuntimeError("GOOGLE_CLIENT_ID environment variable not set. Please set it in your .env file.")
 
 # JWT Configuration
 # For development, secrets.token_urlsafe(32) provides a random key each time the server starts.
