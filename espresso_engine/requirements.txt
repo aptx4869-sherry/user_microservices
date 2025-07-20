@@ -10,3 +10,4 @@ google-auth-oauthlib
 argon2-cffi
 python-dotenv
 pydantic[email]
+pytz
