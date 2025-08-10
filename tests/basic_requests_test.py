@@ -1,34 +1,39 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 import requests
 import pytest
-
-
+from Read_properties import get_registration_data
 
 @pytest.fixture
 def user_data():
+    data = get_registration_data()
     return {
-        "username": "basicuser",
-        "email": "basic@example.com",
-        "password": "basicpass",
+        "username": data["username"],
+        "email": data["email"],
+        "password": data["password"],
     }
+
+@pytest.fixture
+def register_url():
+    return get_registration_data()["url"]
 
 
 
 def test_user_registration(user_data):
-    url = "http://127.0.0.1:8000/register"
+    from Read_properties import get_registration_data
+    url = get_registration_data()["url"]
     response = requests.post(url, json=user_data)
     assert response.status_code == 200
     response_data = response.json()
-    assert response_data["message"] == "User registered successfully"
-    assert response_data["user"] == user_data["username"]   
+    assert "access_token" in response_data
+    assert response_data["token_type"] == "bearer"
     print(f"Registration response: {response_data}")
 
 
 def test_duplicate_email(user_data):
-    url = "http://127.0.0.1:8000/register"
+    from Read_properties import get_registration_data
+    url = get_registration_data()["url"]
     # Register first time
     requests.post(url, json=user_data)
     # Register again with same email
@@ -38,7 +43,8 @@ def test_duplicate_email(user_data):
 
 
 def test_invalid_email():
-    url = "http://127.0.0.1:8000/register"
+    from Read_properties import get_registration_data
+    url = get_registration_data()["url"]
     payload = {
         "username": "user2",
         "email": "not-an-email",
@@ -50,7 +56,8 @@ def test_invalid_email():
 
 
 def test_missing_fields():
-    url = "http://127.0.0.1:8000/register"
+    from Read_properties import get_registration_data
+    url = get_registration_data()["url"]
     payload = {
         "username": "user3"
         # missing email and password
