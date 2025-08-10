@@ -14,14 +14,4 @@ services:
       interval: 5s
       timeout: 2s
       retries: 10
-  test:
-    image: python:3.8-slim
-    working_dir: /app
-    volumes:
-      - ./:/app
-    environment:
-      - BASE_URL=http://app:3000
-    command: >
-      sh -c "pip install -r requirements.txt && sleep 10 && pytest --junitxml=tests/report.xml tests/basic_requests_test.py && cp tests/report.xml /app/tests/docker_report.xml"
-
-
+        
