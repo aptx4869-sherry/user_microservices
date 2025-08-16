@@ -8,7 +8,7 @@ from jose.exceptions import ExpiredSignatureError
 from fastapi.responses import Response
 
 # Import configurations from the config module
-from config.cafe_config import ph, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_SECONDS, REFRESH_TOKEN_EXPIRE_DAYS
+from ..config.cafe_config import ph, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_SECONDS, REFRESH_TOKEN_EXPIRE_DAYS
 
 # --- Password Hashing ---
 def hash_password(password: str) -> str:

@@ -4,16 +4,16 @@ from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 
 # Import shared router, limiter, and GOOGLE_CLIENT_ID from config
-from config.cafe_config import router, limiter, GOOGLE_CLIENT_ID
+from ..config.cafe_config import router, limiter, GOOGLE_CLIENT_ID
 
 # Import models
-from models.cafe_models import User, GoogleTokenRequest, Token
+from ..models.cafe_models import User, GoogleTokenRequest, Token
 
 # Import data storage functions
-from data.cafe_data_storage import users, get_user_by_email, add_user
+from ..data.cafe_data_storage import users, get_user_by_email, add_user
 
 # Import security functions
-from security.cafe_security import (
+from ..security.cafe_security import (
     hash_password, verify_password, create_token,
     create_refresh_token, verify_token, generate_csrf_token,
     set_auth_cookies, clear_auth_cookies

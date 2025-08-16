@@ -2,7 +2,7 @@ from fastapi.responses import FileResponse
 from pathlib import Path
 
 # Import the shared router instance
-from config.cafe_config import router
+from ..config.cafe_config import router
 
 @router.get("/", include_in_schema=False)
 async def serve_frontend():

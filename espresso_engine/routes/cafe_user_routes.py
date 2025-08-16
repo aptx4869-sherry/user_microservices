@@ -3,8 +3,8 @@ from pydantic import BaseModel
 from typing import List, Dict
 
 # Import the shared router instance
-from config.cafe_config import router
-from data.cafe_data_storage import users 
+from ..config.cafe_config import router
+from ..data.cafe_data_storage import users 
 
 class UserOut(BaseModel):
     username: str

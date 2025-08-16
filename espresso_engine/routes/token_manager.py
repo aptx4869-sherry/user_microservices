@@ -2,7 +2,7 @@ from fastapi import APIRouter, Response, Request, Cookie, Header, HTTPException
 from fastapi.responses import JSONResponse
 from typing import Optional
 import secrets
-from routes.cafe_auth_routes import create_token, verify_token, clear_auth_cookies
+from ..routes.cafe_auth_routes import create_token, verify_token, clear_auth_cookies
 
 import uuid
 

@@ -7,13 +7,13 @@ from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
 
 # Import your routers
-from routes import cafe_auth_routes
-from routes import cafe_frontend_route
-from routes import cafe_user_routes
-from routes import token_manager
+from .routes import cafe_auth_routes
+from .routes import cafe_frontend_route
+from .routes import cafe_user_routes
+from .routes import token_manager
 
 # Import the limiter from config
-from config.cafe_config import limiter
+from .config.cafe_config import limiter
 
 # Create the FastAPI application instance
 app = FastAPI(
