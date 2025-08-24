@@ -6,8 +6,8 @@ import secrets
 import os
 from dotenv import load_dotenv
 
-# Load environment variables (ensure .env is in your project root)
-load_dotenv()
+# Load the environment variables from the specified path
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), ".", ".env"))
 
 # --- Global Configurations ---
 # Google Client ID from environment variables
