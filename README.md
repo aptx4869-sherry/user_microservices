@@ -1,3 +1,80 @@
+# Full Stack FastAPI + Frontend Project
+
+## Development
+
+### 1. Backend (FastAPI)
+- Create and activate a virtual environment:
+  ```powershell
+  python -m venv .venv
+  .venv\Scripts\Activate.ps1
+  ```
+- Install dependencies:
+  ```sh
+  pip install -r requirements.txt
+  ```
+- Run the backend (from project root):
+  ```sh
+  uvicorn espresso_engine.main_cafe_server:app --reload
+  ```
+- API docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+### 2. Frontend (Vite/React or similar)
+- Go to your frontend directory (e.g., `café-ui/first-sip-station`):
+  ```sh
+  npm install
+  npm run dev
+  ```
+- The dev server will show a local URL (e.g., [http://localhost:5173](http://localhost:5173)).
+
+---
+
+## Production Build & Deployment
+
+### 1. Build Frontend for Production
+- In your frontend directory:
+  ```sh
+  npm run build
+  ```
+- This creates a `dist` (or `build`) folder with static files.
+
+### 2. Prepare Backend for Production
+- Copy the contents of the frontend `dist` folder to a static folder your backend or IIS will serve (e.g., `café-ui/` or `espresso_engine/static/`).
+- Ensure all backend code, static files, and `requirements.txt` are in your deployable folder.
+
+### 3. Deploy to IIS (Windows)
+- Install IIS and CGI:
+  ```powershell
+  Enable-WindowsOptionalFeature -Online -FeatureName IIS-WebServerRole -All
+  Enable-WindowsOptionalFeature -Online -FeatureName IIS-CGI -All
+  ```
+- Install Python and dependencies on the server:
+  ```sh
+  pip install -r requirements.txt
+  pip install wfastcgi
+  ```
+- Place your backend code, static files, and `web.config` in your IIS site directory.
+- Edit `web.config` to point to your Python and wfastcgi paths, and set the correct `WSGI_HANDLER`.
+- In IIS Manager, create a new site or point an existing site to your deploy folder.
+- Set permissions so IIS can access your files.
+
+---
+
+## Quick Reference
+
+| Task                | Command/Action                                                      |
+|---------------------|---------------------------------------------------------------------|
+| Backend dev         | `uvicorn espresso_engine.main_cafe_server:app --reload`             |
+| Frontend dev        | `npm run dev` (in frontend folder)                                  |
+| Build frontend      | `npm run build` (in frontend folder)                                |
+| Backend prod (IIS)  | Use `web.config` + wfastcgi + IIS                                   |
+| Backend prod (Linux)| `gunicorn espresso_engine.main_cafe_server:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000` |
+
+---
+
+## Notes
+- Make sure CORS is enabled in FastAPI for frontend-backend communication.
+- For IIS, static files can be served directly by IIS or by FastAPI.
+- Always test your APIs and frontend after deployment.
 # User Service
 
 Handles user registration and management.

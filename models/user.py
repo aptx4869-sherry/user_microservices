@@ -1,1 +1,0 @@
-# ORM user model placeholder

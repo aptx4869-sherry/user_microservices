@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+pydantic
+python-jose
+pytest
+slowapi
+zxcvbn-python
+google-auth[requests]
+google-auth-oauthlib
+argon2-cffi
+python-dotenv
+pydantic[email]
+pytz
