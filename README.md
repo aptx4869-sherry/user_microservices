@@ -66,7 +66,7 @@
 | Backend dev         | `uvicorn espresso_engine.main_cafe_server:app --reload`             |
 | Frontend dev        | `npm run dev` (in frontend folder)                                  |
 | Build frontend      | `npm run build` (in frontend folder)                                |
-| Backend prod (IIS)  | Use `web.config` + wfastcgi + IIS                                  |
+| Backend prod (IIS)  | Use `web.config` + wfastcgi + IIS                                   |
 | Backend prod (Linux)| `gunicorn espresso_engine.main_cafe_server:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000` |
 
 ---
